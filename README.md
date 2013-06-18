@@ -1,4 +1,4 @@
-ads_properties
-==============
+ads_animals
+===========
 
-Provides common Properties features for ADS Drupal distribution
+Provides common Animal features for ADS Drupal distribution.
