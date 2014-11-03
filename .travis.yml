@@ -1,44 +1,87 @@
-language: php
-php:
-  - 5.3
+# Travis CI build configuration config file.
+# Used environment variables (see: http://docs.travis-ci.com/user/ci-environment/):
+#   TRAVIS_BUILD_DIR - The absolute path to the directory where the repository being built has been copied on the worker. (e.g. "/home/travis/build/mycognitive/ads")
+#   TRAVIS_REPO_SLUG - The slug (in form: owner_name/repo_name) of the repository currently being built. (e.g. "mycognitive/ads_features")
+
+# Before Install
+# Use this to prepare the system to install prerequisites or dependencies.
+# Commonly used to update git repository submodules and do similar tasks that need to be performed before dependencies are installed.
+before_install:
+  - env
+  - sudo sysctl kernel.hostname=$HOST
+
+# Install
+# Use this to install any prerequisites or dependencies necessary to run your build.
+install:
+  - set -e # Exit immediately if a subshell command exits with a non-zero status (man sh).
+  - echo -e "Host github.com\n User git\n StrictHostKeyChecking no\n PasswordAuthentication no\n CheckHostIP no\n BatchMode yes\n" >> ~/.ssh/config
+  - git clone https://github.com/mycognitive/ads $ADS && cd $ADS
+  - sh ./configure install
+  - sudo puppet apply puppet/travis.pp && sudo puppet apply puppet/ads.dev.pp && sudo puppet apply puppet/solr.dev.pp && sudo puppet module list
+
+# Before Script
+# Use this to prepare your build for testing (e.g. copy database configurations, environment variables, etc.).
 before_script:
-  - sudo git clone https://github.com/mycognitive/ads ads
-  - cd ads
-  - sudo cp travis/travis.known_hosts ~/.ssh/known_hosts
-  - sudo cat /etc/ssh/ssh_config
-  - sudo echo -e "Host github.com\n User git\n StrictHostKeyChecking no\n PasswordAuthentication no\n CheckHostIP no\n BatchMode yes\n" >> ~/.ssh/config
-  - sudo cat ~/.ssh/config
-  - sudo cat ~/.ssh/known_hosts
-  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
-  - echo "CREATE DATABASE travis_ads_test DEFAULT CHARACTER SET utf8" | mysql -uroot -proot
-  - sudo cp ../.travis/travis.build.properties build.properties
-  - phpenv config-add php.ini
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq php5-gd
-  - sudo apt-get install -qq php5-mysql
-  - sudo apt-get install -qq php-pear
-  - sudo apt-get install python-software-properties
-  - sudo apt-get install -y -qq postfix
-  - sudo service postfix stop
-  - smtp-sink -d "%d.%H.%M.%S" localhost:2500 1000 &
-  - echo -e '#!/usr/bin/env bash\nexit 0' | sudo tee /usr/sbin/sendmail
-  - echo 'sendmail_path = "/usr/sbin/sendmail -t -i "' | sudo tee "/home/travis/.phpenv/versions/`php -i | grep "PHP Version" | head -n 1 | grep -o -P '\d+\.\d+\.\d+.*'`/etc/conf.d/sendmail.ini"
-  - sudo pear upgrade pear
-  - sudo pear channel-discover pear.phing.info
-  - sudo pear config-set preferred_state alpha
-  - sudo chmod -R 777 "/tmp/pear"
-  - sudo pear config-set cache_dir "/tmp/pear/temp"
-  - sudo pear install --onlyreqdeps phing/phing
-  - sudo pear channel-discover pear.drush.org
-  - sudo pear install drush/drush-6.0.0
-  - sudo chmod -R 777 /usr/share/php/drush/lib
-  - sudo drush --version
-  - sudo apt-get install -y -qq postfix
-env:
-  - GIT_TRACE=1 GIT_SSH="/usr/bin/ssh -oStrictHostKeyChecking=no "
+  - set -e # Exit immediately if a subshell command exits with a non-zero status (man sh).
+  - cat travis/travis.known_hosts | tee -a ~/.ssh/known_hosts # Append Travis known_hosts to user file.
+  - ln -sv travis/travis.build.properties build.properties     # Prepare build.properties file.
+  - sudo puppet apply puppet/ads.dev.configure-site.pp           # Apply webroot puppet configuration.
+# - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -uroot
+# - echo "CREATE DATABASE travis_ads_test DEFAULT CHARACTER SET utf8" | mysql -uroot -proot
+
+# Script
+# Main build command to run.
+# All commands must exit with code 0 on success. Anything else is considered failure.
 script:
-  - sudo cp ../.travis/dist/*.make ./
-  - sudo phing -debug
-  - sudo phing -debug ads-install
+  - set -e # Exit immediately if a subshell command exits with a non-zero status (man sh).
+  - make
+  - sudo rm -rv "$SRCDIR" && sudo mv -ifv "$ADS/src" "$SRCDIR" && sudo ln -sfv "$SRCDIR" "$HOME/ads/src" # Move source dir into webroot and replace with link.
+  - rm  -fr "$FORKDIR" && ln -sfv "$TRAVIS_BUILD_DIR" "$FORKDIR" # Replace subdir with the tested repo.
+  - make install
+# - sudo chmod -R 777 $SRCDIR/
+  - sh -xe $ADS/scripts/coder_check.sh
+# - sh -xe $ADS/scripts/tests_run.sh $URL
+
+# After Success
+# Note: The standard Unix exit code of "0" means the build passed; everything else is treated as failure.
+after_success:
+  - sh -xe $ADS/travis/scripts/after_success.sh
+
+# After Failure
+after_failure:
+  - sh -xe $ADS/travis/scripts/after_failure.sh
+
+# After Script
+# Test result is exported to TRAVIS_TEST_RESULT.
+after_script:
+  - pwd
+
+# Environment
+env:
+  global:
+    - HOST="ads.server" URL="http://$HOST/" SRCDIR="/var/www/ads"
+    - GIT_TRACE=1 GIT_SSH="/usr/bin/ssh -oStrictHostKeyChecking=no "
+    - DRUSH="drush -yv -r $SRCDIR --uri=$URL"
+    - ADS="$HOME/ads" BASEDIR="`basename $TRAVIS_REPO_SLUG`" FORKDIR="$SRCDIR/sites/all/modules/ads/$BASEDIR"
+  matrix:
+    - ADS_SEARCH=db
+    - ADS_SEARCH=solr
+
+mysql:
+ database: travis_ads_test
+ username: root
+ encoding: utf8
+
 notifications:
   email: false
+
+addons:
+  hosts:
+    - ads.server
+
+language: php
+
+# PHP versions to test against.
+# See: http://docs.travis-ci.com/user/languages/php/
+php:
+  - 5.5
