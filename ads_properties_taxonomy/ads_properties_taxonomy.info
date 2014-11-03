@@ -1,0 +1,9 @@
+name = ADS Properties Taxonomy
+description = Provides a default fields and settings for taxonomies (Places).
+core = 7.x
+package = Features
+dependencies[] = features
+dependencies[] = taxonomy
+features[features_api][] = api:2
+features[taxonomy][] = places
+project path = sites/all/modules/ads/ads_properties
