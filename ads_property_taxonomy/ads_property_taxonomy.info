@@ -6,4 +6,4 @@ dependencies[] = features
 dependencies[] = taxonomy
 features[features_api][] = api:2
 features[taxonomy][] = places
-project path = sites/all/modules/ads/ads_properties
+project path = sites/all/modules/ads/ads_property

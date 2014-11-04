@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * ads_properties_content_types.features.field_instance.inc
+ * ads_property_content_types.features.field_instance.inc
  */
 
 /**
  * Implements hook_field_default_field_instances().
  */
-function ads_properties_content_types_field_default_field_instances() {
+function ads_property_content_types_field_default_field_instances() {
   $field_instances = array();
 
   // Exported field_instance: 'node-place-body'

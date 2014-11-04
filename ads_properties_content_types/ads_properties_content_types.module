@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the ads_properties_content_types feature.
- */
-
-include_once 'ads_properties_content_types.features.inc';

@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * ads_properties_content_types.features.inc
+ * ads_property_content_types.features.inc
  */
 
 /**
  * Implements hook_ctools_plugin_api().
  */
-function ads_properties_content_types_ctools_plugin_api($module = NULL, $api = NULL) {
+function ads_property_content_types_ctools_plugin_api($module = NULL, $api = NULL) {
   if ($module == "strongarm" && $api == "strongarm") {
     return array("version" => "1");
   }
@@ -16,7 +16,7 @@ function ads_properties_content_types_ctools_plugin_api($module = NULL, $api = N
 /**
  * Implements hook_node_info().
  */
-function ads_properties_content_types_node_info() {
+function ads_property_content_types_node_info() {
   $items = array(
     'place' => array(
       'name' => t('Place'),

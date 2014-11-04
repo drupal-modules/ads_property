@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * ads_properties_content_types.features.field_base.inc
+ * ads_property_content_types.features.field_base.inc
  */
 
 /**
  * Implements hook_field_default_field_bases().
  */
-function ads_properties_content_types_field_default_field_bases() {
+function ads_property_content_types_field_default_field_bases() {
   $field_bases = array();
 
   // Exported field_base: 'field_link_wiki_page'

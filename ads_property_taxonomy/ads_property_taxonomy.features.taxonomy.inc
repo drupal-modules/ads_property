@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * ads_properties_taxonomy.features.taxonomy.inc
+ * ads_property_taxonomy.features.taxonomy.inc
  */
 
 /**
  * Implements hook_taxonomy_default_vocabularies().
  */
-function ads_properties_taxonomy_taxonomy_default_vocabularies() {
+function ads_property_taxonomy_taxonomy_default_vocabularies() {
   return array(
     'places' => array(
       'name' => 'Places',

@@ -7,8 +7,8 @@
 /**
  * Implements hook_ads_taxonomy_import().
  */
-function ads_properties_ads_taxonomy_files() {
+function ads_property_ads_taxonomy_files() {
   return array(
-    drupal_get_path('module', 'ads_properties') . '/taxonomies/Categories.csv',
+    drupal_get_path('module', 'ads_property') . '/taxonomies/Categories.csv',
   );
 }

@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * ads_properties_content_types.features.field.inc
+ * ads_property_content_types.features.field.inc
  */
 
 /**
  * Implements hook_field_default_fields().
  */
-function ads_properties_content_types_field_default_fields() {
+function ads_property_content_types_field_default_fields() {
   $fields = array();
 
   // Exported field: 'node-advert-body'.
