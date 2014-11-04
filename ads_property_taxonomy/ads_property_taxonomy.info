@@ -1,4 +1,4 @@
-name = ADS Properties Taxonomy
+name = ADS Property Taxonomy
 description = Provides a default fields and settings for taxonomies (Places).
 core = 7.x
 package = Features

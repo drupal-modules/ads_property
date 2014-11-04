@@ -1,7 +1,7 @@
-name = ADS Properties Content Types
-description = Provides a default content types and fields settings for ADS Properties.
+name = ADS Property Content Types
+description = Provides a default content types and fields settings for ADS Property.
 core = 7.x
-package = ADS Properties
+package = ADS Property
 project = ads_property
 dependencies[] = ads_content_types
 dependencies[] = features

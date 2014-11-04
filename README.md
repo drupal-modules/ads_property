@@ -1,7 +1,7 @@
-Ads Properties
+Ads Property
 ===========
 
-Provides common Ads Properties features for ADS Drupal distribution.
+Provides common Ads Property features for ADS Drupal distribution.
 
 Build status
 ------------

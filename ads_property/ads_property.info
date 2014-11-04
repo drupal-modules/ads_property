@@ -1,7 +1,7 @@
-name = Ads Properties
-description = Provides common Properties features for Ads distribution
+name = Ads Property
+description = Provides common Property features for Ads distribution
 core = 7.x
-package = ADS Properties
+package = ADS Property
 version = 7.x-1.0
 project = ads_property
 dependencies[] = ads_taxonomy
